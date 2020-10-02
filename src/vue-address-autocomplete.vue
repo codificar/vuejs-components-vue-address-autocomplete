@@ -25,6 +25,7 @@
 import axios from "axios";
 
 export default {
+  name: "VueAddressAutocomplete", // vue component name
   props: {
     AutocompleteParams: {
       type: Object,
