@@ -82,6 +82,8 @@ function _objectSpread2(target) {
 
   return target;
 }var script = {
+  name: "VueAddressAutocomplete",
+  // vue component name
   props: {
     AutocompleteParams: {
       type: Object,
@@ -161,7 +163,7 @@ function _objectSpread2(target) {
 
               case 5:
                 _yield$axios$get = _context.sent;
-                response = _yield$axios$get.data;
+                response = _yield$axios$get.response;
 
                 if (response.success) {
                   _this.places_result = response.data;
@@ -218,7 +220,7 @@ function _objectSpread2(target) {
 
               case 5:
                 _yield$axios$get2 = _context2.sent;
-                response = _yield$axios$get2.data;
+                response = _yield$axios$get2.response;
                 return _context2.abrupt("return", response);
 
               case 10:
@@ -490,7 +492,7 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-7c24c7f9_0", {
+  inject("data-v-1564c0ea_0", {
     source: ".container_results{position:absolute;z-index:10;background-color:#fff;width:100%}.row_result{cursor:pointer;padding:6px 15px}.row_result:hover{background:#eee}",
     map: undefined,
     media: undefined
@@ -502,7 +504,7 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 var __vue_scope_id__ = undefined;
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-7c24c7f9";
+var __vue_module_identifier__ = "data-v-1564c0ea";
 /* functional template */
 
 var __vue_is_functional_template__ = false;

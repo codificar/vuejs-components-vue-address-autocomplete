@@ -84,7 +84,7 @@ export default {
 
       try {
         if (this.search_string.length > this.MinLength) {
-          const { data: response } = await axios.get(this.autocomplete_url, {
+          const { response } = await axios.get(this.autocomplete_url, {
             params: { ...this.api_params, place: this.search_string },
           });
 
@@ -108,7 +108,7 @@ export default {
         console.log("callGeocodeApi PARAM", {
           params: { ...this.api_params, address, clicker: this.clicker },
         });
-        const { data: response } = await axios.get(this.geocode_url, {
+        const { response } = await axios.get(this.geocode_url, {
           params: { ...this.api_params, address, clicker: this.clicker },
         });
 

@@ -2,6 +2,8 @@ import axios from 'axios';
 
 //
 var script = {
+  name: "VueAddressAutocomplete",
+  // vue component name
   props: {
     AutocompleteParams: {
       type: Object,
@@ -62,7 +64,7 @@ var script = {
       try {
         if (this.search_string.length > this.MinLength) {
           const {
-            data: response
+            response
           } = await axios.get(this.autocomplete_url, {
             params: { ...this.api_params,
               place: this.search_string
@@ -93,7 +95,7 @@ var script = {
           }
         });
         const {
-          data: response
+          response
         } = await axios.get(this.geocode_url, {
           params: { ...this.api_params,
             address,
@@ -396,7 +398,7 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-7c24c7f9_0", {
+  inject("data-v-1564c0ea_0", {
     source: ".container_results{position:absolute;z-index:10;background-color:#fff;width:100%}.row_result{cursor:pointer;padding:6px 15px}.row_result:hover{background:#eee}",
     map: undefined,
     media: undefined
