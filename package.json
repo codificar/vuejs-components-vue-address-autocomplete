@@ -2,6 +2,7 @@
   "name": "vue-address-autocomplete",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "main": "dist/vue-address-autocomplete.ssr.js",
   "browser": "dist/vue-address-autocomplete.esm.js",
   "module": "dist/vue-address-autocomplete.esm.js",
@@ -10,7 +11,11 @@
     "dist/*",
     "src/**/*.vue"
   ],
-  "scripts": {
+  "repository": {
+		"type": "git",
+		"url": "git+https://git.codificar.com.br/vuejs-components/vue-address-autocomplete.git"
+  },
+    "scripts": {
     "serve": "vue-cli-service serve dev/serve.js",
     "build": "cross-env NODE_ENV=production rollup --config build/rollup.config.js",
     "build:ssr": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format cjs",
