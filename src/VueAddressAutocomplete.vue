@@ -34,7 +34,7 @@ export default {
           id: null,
           token: null,
           latitude: null,
-          longitude: null
+          longitude: null,
         },
       },
     },
@@ -52,7 +52,8 @@ export default {
     },
     NeedAddressNumberText: {
       type: String,
-      default: "Você não informou o número do endereço, informando-o a busca fica mais precisa.",
+      default:
+        "Você não informou o número do endereço, informando-o a busca fica mais precisa.",
     },
     MinLength: {
       type: Number,
@@ -61,7 +62,7 @@ export default {
     Delay: {
       type: Number,
       default: 1000,
-    },    
+    },
   },
   data() {
     return {
@@ -81,10 +82,9 @@ export default {
      */
     async callAutocompleteApi() {
       this.blur = false;
-
       try {
         if (this.search_string.length > this.MinLength) {
-          const { response } = await axios.get(this.autocomplete_url, {
+          const { data: response } = await axios.get(this.autocomplete_url, {
             params: { ...this.api_params, place: this.search_string },
           });
 
@@ -104,6 +104,10 @@ export default {
      */
     async callGeocodeApi(address) {
       try {
+        const { data: response } = await axios.get(this.geocode_url, {
+          params: { ...this.api_params, address, clicker: this.clicker },
+        });
+
         return response;
       } catch (error) {
         console.log(error);
@@ -172,7 +176,7 @@ export default {
       let check = false;
       let components = address.split(" ");
 
-      return (check = components.some(function (component, index) {
+      return (check = components.some(function(component, index) {
         let teste = parseInt(component.replace(",", "").replace("-", ""));
         return typeof teste === "number" && !isNaN(teste) && index > 0;
       }));
@@ -181,7 +185,7 @@ export default {
 
   watch: {
     AutocompleteParams: {
-      handler: function () {
+      handler: function() {
         this.setApiParams();
       },
       immediate: true,
