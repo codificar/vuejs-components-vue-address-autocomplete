@@ -1,35 +1,28 @@
 {
   "name": "vue-address-autocomplete",
   "version": "1.0.0",
-  "main": "dist/ue-address-autocomplete.umd.js",
-  "module": "dist/ue-address-autocomplete.esm.js",
-  "unpkg": "dist/ue-address-autocomplete.min.js",
-  "browser": {
-    "./sfc": "src/ue-address-autocomplete.vue"
-  },
+  "description": "",
+  "main": "./dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://git.codificar.com.br/vuejs-components/vue-address-autocomplete.git"
   },
   "scripts": {
-    "build": "npm run build:umd & npm run build:es & npm run build:unpkg",
-    "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/ue-address-autocomplete.umd.js",
-    "build:es": "rollup --config build/rollup.config.js --format es --file dist/ue-address-autocomplete.esm.js",
-    "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/ue-address-autocomplete.min.js"
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "npm run development -- --watch",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
+  "author": "codificar",
+  "license": "ISC",
   "dependencies": {
     "axios": "^0.20.0",
-    "rollup-plugin-async": "^1.2.0"
+    "cross-env": "^7.0.2",
+    "laravel-mix": "^5.0.6"
   },
   "devDependencies": {
-    "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^9.0.0",
-    "rollup": "^1.17.0",
-    "rollup-plugin-babel": "^3.0.7",
-    "rollup-plugin-buble": "^0.19.8",
-    "rollup-plugin-commonjs": "^10.0.1",
-    "rollup-plugin-vue": "^5.0.1",
-    "vue": "^2.6.10",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.6.12"
   }
 }
