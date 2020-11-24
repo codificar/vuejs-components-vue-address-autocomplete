@@ -63,10 +63,14 @@ export default {
       type: Number,
       default: 1000,
     },
+    Address: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
-      search_string: "",
+      search_string: this.Address != null ? this.Address : '',
       places_result: [],
       api_params: {},
       autocomplete_url: "",
@@ -77,6 +81,10 @@ export default {
   },
 
   methods: {
+    setPropsAdress(address){
+      this.search_string = address;
+      this.blur = true;
+    },
     /**
      * Realiza chamada a api para sugestões de endereçõs
      */
@@ -183,7 +191,7 @@ export default {
     },
   },
 
-  watch: {
+  watch: {  
     AutocompleteParams: {
       handler: function() {
         this.setApiParams();
@@ -204,8 +212,14 @@ export default {
   },
 
   mounted() {
+    var vm = this;
     this.autocomplete_url = this.AutocompleteUrl;
     this.geocode_url = this.GeocodeUrl;
+
+    this.$root.$on('seach_edit', function(address) {     
+      vm.search_string = address;
+      vm.blur = true;
+    });
   },
 };
 </script>
