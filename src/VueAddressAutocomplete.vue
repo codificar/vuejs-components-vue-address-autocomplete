@@ -85,6 +85,21 @@ export default {
       this.search_string = address;
       this.blur = true;
     },
+    async setAdressAndSelectFirst(address){
+      this.setPropsAdress(address)
+
+      const placesResponse = await axios.get(this.autocomplete_url, {
+        params: { ...this.api_params, place: this.search_string },
+      });
+
+      const geocodeResponse = await this.callGeocodeApi(placesResponse.data.data[0].address);
+      if (geocodeResponse.success) {
+          geocodeResponse.data.latitude = geocodeResponse.data.latitude;
+          geocodeResponse.data.longitude = geocodeResponse.data.longitude;
+          this.$emit("addressSelected", geocodeResponse.data);
+      } else this.$emit("addressSelected", geocodeResponse.data);
+    },
+    
     /**
      * Realiza chamada a api para sugestões de endereçõs
      */
