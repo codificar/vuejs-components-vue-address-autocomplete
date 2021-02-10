@@ -18,6 +18,17 @@
       </div>
       <hr />
     </div>
+
+    <div v-if="!hasNumber">
+      <label> {{ NumberLabel }} :</label>
+      <input
+        v-model="address_number"
+        @blur="setNumber"
+        
+        type="number"
+        class="form-control"
+      />
+    </div>
   </div>
 </template>
 
@@ -55,6 +66,10 @@ export default {
       default:
         "Você não informou o número do endereço, informando-o a busca fica mais precisa.",
     },
+    NumberLabel: {
+      type: String,
+      default: "Numero",
+    },
     MinLength: {
       type: Number,
       default: 5,
@@ -70,36 +85,52 @@ export default {
   },
   data() {
     return {
-      search_string: this.Address != null ? this.Address : '',
+      search_string: this.Address != null ? this.Address : "",
       places_result: [],
       api_params: {},
       autocomplete_url: "",
       geocode_url: "",
       blur: false,
       clicker: "primary",
+
+      selectedAddress: null,
+      address_number: null,
+      hasNumber: true,
     };
   },
 
   methods: {
-    setPropsAdress(address){
+    setNumber() {
+      let newAddressWithNumber = {...this.selectedAddress};
+
+      newAddressWithNumber.address = `${newAddressWithNumber.address} ${this.address_number}`;
+      newAddressWithNumber.main_text = `${newAddressWithNumber.main_text} ${this.address_number}`;
+      newAddressWithNumber.secondary_text = `${newAddressWithNumber.secondary_text} ${this.address_number}`;
+
+      this.$emit("addressSelected", newAddressWithNumber);      
+    },
+   
+    setPropsAdress(address) {
       this.search_string = address;
       this.blur = true;
     },
-    async setAdressAndSelectFirst(address){
-      this.setPropsAdress(address)
+    async setAdressAndSelectFirst(address) {
+      this.setPropsAdress(address);
 
       const placesResponse = await axios.get(this.autocomplete_url, {
         params: { ...this.api_params, place: this.search_string },
       });
 
-      const geocodeResponse = await this.callGeocodeApi(placesResponse.data.data[0].address);
+      const geocodeResponse = await this.callGeocodeApi(
+        placesResponse.data.data[0].address
+      );
       if (geocodeResponse.success) {
-          geocodeResponse.data.latitude = geocodeResponse.data.latitude;
-          geocodeResponse.data.longitude = geocodeResponse.data.longitude;
-          this.$emit("addressSelected", geocodeResponse.data);
+        geocodeResponse.data.latitude = geocodeResponse.data.latitude;
+        geocodeResponse.data.longitude = geocodeResponse.data.longitude;
+        this.$emit("addressSelected", geocodeResponse.data);
       } else this.$emit("addressSelected", geocodeResponse.data);
     },
-    
+
     /**
      * Realiza chamada a api para sugestões de endereçõs
      */
@@ -143,21 +174,26 @@ export default {
     async handleSelectAddress(data) {
       this.search_string = data.address;
       this.places_result = [];
-
-      !this.checkNumber(data.address) &&
+     
+      this.hasNumber = true;
+      if (!this.checkNumber(data.address)) {
         this.$toasted.show(this.NeedAddressNumberText, {
           theme: "bubble",
           type: "info",
           position: "bottom-center",
           duration: 5000,
         });
+        this.hasNumber = false;
+      }
 
+      this.selectedAddress = data;
       if (data.place_id != null) {
         const response = await this.callGeocodeApi(data.address);
 
         if (response.success) {
           data.latitude = response.data.latitude;
           data.longitude = response.data.longitude;
+          this.selectedAddress = data;
           this.$emit("addressSelected", data);
         } else this.$emit("addressSelected", data);
 
@@ -201,12 +237,19 @@ export default {
 
       return (check = components.some(function(component, index) {
         let teste = parseInt(component.replace(",", "").replace("-", ""));
-        return typeof teste === "number" && !isNaN(teste) && index > 0;
+        if(typeof teste === "number" && !isNaN(teste) && index > 0){
+          if(teste.toString().length > 4){
+            return false;
+          }else{
+            return true
+          }          
+        };
+        // return typeof teste === "number" && !isNaN(teste) && index > 0;
       }));
     },
   },
 
-  watch: {  
+  watch: {
     AutocompleteParams: {
       handler: function() {
         this.setApiParams();
@@ -231,7 +274,7 @@ export default {
     this.autocomplete_url = this.AutocompleteUrl;
     this.geocode_url = this.GeocodeUrl;
 
-    this.$root.$on('seach_edit', function(address) {     
+    this.$root.$on("seach_edit", function(address) {
       vm.search_string = address;
       vm.blur = true;
     });
