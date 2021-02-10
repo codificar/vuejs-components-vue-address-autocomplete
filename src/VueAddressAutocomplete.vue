@@ -109,7 +109,13 @@ export default {
 
       this.$emit("addressSelected", newAddressWithNumber);      
     },
-   
+
+    removeInputNumber() {
+      this.selectedAddress = null
+      this.address_number = null
+      this.hasNumber = false
+    },
+    
     setPropsAdress(address) {
       this.search_string = address;
       this.blur = true;
