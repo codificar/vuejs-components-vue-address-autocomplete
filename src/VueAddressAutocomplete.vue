@@ -113,7 +113,7 @@ export default {
     removeInputNumber() {
       this.selectedAddress = null
       this.address_number = null
-      this.hasNumber = false
+      this.hasNumber = true
     },
     
     setPropsAdress(address) {
