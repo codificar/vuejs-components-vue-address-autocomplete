@@ -24,7 +24,6 @@
       <input
         v-model="address_number"
         @blur="setNumber"
-        
         type="number"
         class="form-control"
       />
@@ -101,28 +100,27 @@ export default {
 
   methods: {
     setNumber() {
-      let newAddressWithNumber = {...this.selectedAddress};
+      let newAddressWithNumber = { ...this.selectedAddress };
 
       newAddressWithNumber.address = `${newAddressWithNumber.address} ${this.address_number}`;
       newAddressWithNumber.main_text = `${newAddressWithNumber.main_text} ${this.address_number}`;
       newAddressWithNumber.secondary_text = `${newAddressWithNumber.secondary_text} ${this.address_number}`;
 
-      this.$emit("addressSelected", newAddressWithNumber);      
+      this.$emit("addressSelected", newAddressWithNumber);
     },
 
     removeInputNumber() {
-      this.selectedAddress = null
-      this.address_number = null
-      this.hasNumber = true
+      this.selectedAddress = null;
+      this.address_number = null;
+      this.hasNumber = true;
     },
-    
+
     setPropsAdress(address) {
       this.search_string = address;
       this.blur = true;
     },
     async setAdressAndSelectFirst(address) {
       this.setPropsAdress(address);
-
       const placesResponse = await axios.get(this.autocomplete_url, {
         params: { ...this.api_params, place: this.search_string },
       });
@@ -162,6 +160,29 @@ export default {
      * Realiza chamada a api de geocode para recuperar a latitude
      * e logitude no caso de o provider ser google maps
      */
+    async callPlaceId(place_id) {
+      try {
+        const { data: response } = await axios.get(
+          "/api/v1/libs/geolocation/admin/get_place_details",
+          {
+            params: {
+              ...this.api_params,
+              place_id,
+              clicker: this.clicker,
+            },
+          }
+        );
+
+        return response;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    /**
+     * Realiza chamada a api de geocode para recuperar a latitude
+     * e logitude no caso de o provider ser google maps
+     */
     async callGeocodeApi(address) {
       try {
         const { data: response } = await axios.get(this.geocode_url, {
@@ -180,7 +201,7 @@ export default {
     async handleSelectAddress(data) {
       this.search_string = data.address;
       this.places_result = [];
-     
+
       this.hasNumber = true;
       if (!this.checkNumber(data.address)) {
         this.$toasted.show(this.NeedAddressNumberText, {
@@ -191,18 +212,26 @@ export default {
         });
         this.hasNumber = false;
       }
-
       this.selectedAddress = data;
       if (data.place_id != null) {
-        const response = await this.callGeocodeApi(data.address);
-
+        const response = await this.callPlaceId(data.place_id);
         if (response.success) {
           data.latitude = response.data.latitude;
           data.longitude = response.data.longitude;
           this.selectedAddress = data;
           this.$emit("addressSelected", data);
         } else this.$emit("addressSelected", data);
+        return;
+      }
 
+      if (data.latitude === null || data.longitude === null) {
+        const response = await this.callGeocodeApi(data.address);
+        if (response.success) {
+          data.latitude = response.data.latitude;
+          data.longitude = response.data.longitude;
+          this.selectedAddress = data;
+          this.$emit("addressSelected", data);
+        } else this.$emit("addressSelected", data);
         return;
       }
 
@@ -241,15 +270,15 @@ export default {
       let check = false;
       let components = address.split(" ");
 
-      return (check = components.some(function(component, index) {
+      return (check = components.some(function (component, index) {
         let teste = parseInt(component.replace(",", "").replace("-", ""));
-        if(typeof teste === "number" && !isNaN(teste) && index > 0){
-          if(teste.toString().length > 4){
+        if (typeof teste === "number" && !isNaN(teste) && index > 0) {
+          if (teste.toString().length > 4) {
             return false;
-          }else{
-            return true
-          }          
-        };
+          } else {
+            return true;
+          }
+        }
         // return typeof teste === "number" && !isNaN(teste) && index > 0;
       }));
     },
@@ -257,7 +286,7 @@ export default {
 
   watch: {
     AutocompleteParams: {
-      handler: function() {
+      handler: function () {
         this.setApiParams();
       },
       immediate: true,
@@ -280,7 +309,7 @@ export default {
     this.autocomplete_url = this.AutocompleteUrl;
     this.geocode_url = this.GeocodeUrl;
 
-    this.$root.$on("seach_edit", function(address) {
+    this.$root.$on("seach_edit", function (address) {
       vm.search_string = address;
       vm.blur = true;
     });
