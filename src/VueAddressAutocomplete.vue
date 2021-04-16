@@ -40,12 +40,10 @@ export default {
     AutocompleteParams: {
       type: Object,
       default: {
-        filter: {
-          id: null,
-          token: null,
-          latitude: null,
-          longitude: null,
-        },
+        id: null,
+        token: null,
+        latitude: -25,
+        longitude: -45,
       },
     },
     AutocompleteUrl: {
@@ -60,15 +58,6 @@ export default {
       type: String,
       default: "Escreva o endereço",
     },
-    NeedAddressNumberText: {
-      type: String,
-      default:
-        "Você não informou o número do endereço, informando-o a busca fica mais precisa.",
-    },
-    NumberLabel: {
-      type: String,
-      default: "Numero",
-    },
     MinLength: {
       type: Number,
       default: 5,
@@ -80,6 +69,19 @@ export default {
     Address: {
       type: String,
       default: "",
+    },
+    RequiredNumber: {
+      type: Boolean,
+      default: true,
+    },
+    NeedAddressNumberText: {
+      type: String,
+      default:
+        "Você não informou o número do endereço, informando-o a busca fica mais precisa.",
+    },
+    NumberLabel: {
+      type: String,
+      default: "Numero",
     },
   },
   data() {
@@ -203,7 +205,7 @@ export default {
       this.places_result = [];
 
       this.hasNumber = true;
-      if (!this.checkNumber(data.address)) {
+      if (!this.checkNumber(data.address) && this.RequiredNumber) {
         this.$toasted.show(this.NeedAddressNumberText, {
           theme: "bubble",
           type: "info",
@@ -270,7 +272,7 @@ export default {
       let check = false;
       let components = address.split(" ");
 
-      return (check = components.some(function (component, index) {
+      return (check = components.some(function(component, index) {
         let teste = parseInt(component.replace(",", "").replace("-", ""));
         if (typeof teste === "number" && !isNaN(teste) && index > 0) {
           if (teste.toString().length > 4) {
@@ -286,7 +288,7 @@ export default {
 
   watch: {
     AutocompleteParams: {
-      handler: function () {
+      handler: function() {
         this.setApiParams();
       },
       immediate: true,
@@ -309,7 +311,7 @@ export default {
     this.autocomplete_url = this.AutocompleteUrl;
     this.geocode_url = this.GeocodeUrl;
 
-    this.$root.$on("seach_edit", function (address) {
+    this.$root.$on("seach_edit", function(address) {
       vm.search_string = address;
       vm.blur = true;
     });
