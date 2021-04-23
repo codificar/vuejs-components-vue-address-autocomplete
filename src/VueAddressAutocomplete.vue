@@ -218,7 +218,7 @@ export default {
 
       this.hasNumber = true;
       if (!this.checkNumber(data.address) && this.RequiredNumber) {
-        this.$toasted.show(this.NeedAddressNumberText, {
+        if(this.$toasted) this.$toasted.show(this.NeedAddressNumberText, {
           theme: "bubble",
           type: "info",
           position: "bottom-center",
@@ -320,6 +320,7 @@ export default {
 
   mounted() {
     var vm = this;
+    this.blur = true;
     this.autocomplete_url = this.AutocompleteUrl;
     this.geocode_url = this.GeocodeUrl;
 
