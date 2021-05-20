@@ -157,7 +157,10 @@ export default {
         console.log(error);
       }
     },
-
+    extract_domain_with_protocol(url){
+        const { hostname } = new URL(url);
+        return hostname;
+    }
     /**
      * Realiza chamada a api de geocode para recuperar a latitude
      * e logitude no caso de o provider ser google maps
@@ -165,7 +168,7 @@ export default {
     async callPlaceId(place_id) {
       try {
         const { data: response } = await axios.get(
-          "/api/v1/libs/geolocation/admin/get_place_details",
+          this.extract_domain_with_protocol(this.autocomplete_url) +"/api/v1/libs/geolocation/admin/get_place_details",
           {
             params: {
               ...this.api_params,
