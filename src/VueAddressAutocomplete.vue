@@ -159,8 +159,8 @@ export default {
     },
     extract_domain_with_protocol(url){
         const { hostname , protocol } = new URL(url);
-        return protocol + "://"  hostname;
-    }
+        return protocol + "://" + hostname;
+    },
     /**
      * Realiza chamada a api de geocode para recuperar a latitude
      * e logitude no caso de o provider ser google maps
