@@ -167,9 +167,17 @@ export default {
      */
     async callPlaceId(place_id) {
       try {
-        const url = const url = (window.outsider.url ? window.outsider.url +"/api/v1/libs/geolocation/admin/get_place_details" : this.extract_domain_with_protocol(this.autocomplete_url) +"/api/v1/libs/geolocation/admin/get_place_details");
-        const { data: response } = await axios.get(
-            url,
+            const url = ( window ? 
+                            ( window.outsider ? 
+                                ( window.outsider.url ? 
+                                    ( window.outsider.url ) 
+                                    : (this.extract_domain_with_protocol(this.autocomplete_url)) 
+                                ) : (this.extract_domain_with_protocol(this.autocomplete_url) ) 
+                            ) : (this.extract_domain_with_protocol(this.autocomplete_url) )
+                        );
+                        
+            const { data: response } = await axios.get(
+            url + "/api/v1/libs/geolocation/admin/get_place_details" ,
           {
             params: {
               ...this.api_params,
