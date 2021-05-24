@@ -50,6 +50,10 @@ export default {
       type: String,
       default: "",
     },
+    GetPlaceDetailsRoute: {
+      type: String,
+      default: "/api/v1/libs/geolocation/admin/get_place_details",
+    },
     GeocodeUrl: {
       type: String,
       default: "",
@@ -157,27 +161,13 @@ export default {
         console.log(error);
       }
     },
-    extract_domain_with_protocol(url){
-        const { hostname , protocol } = new URL(url);
-        return protocol + "://" + hostname;
-    },
     /**
      * Realiza chamada a api de geocode para recuperar a latitude
      * e logitude no caso de o provider ser google maps
      */
     async callPlaceId(place_id) {
-      try {
-            const url = ( window ? 
-                            ( 'outsider' in window ? 
-                                ( 'url' in window.outsider ? 
-                                    ( window.outsider.url ) 
-                                    : (this.extract_domain_with_protocol(this.autocomplete_url)) 
-                                ) : (this.extract_domain_with_protocol(this.autocomplete_url) ) 
-                            ) : (this.extract_domain_with_protocol(this.autocomplete_url) )
-                        );
-                        
-            const { data: response } = await axios.get(
-            url + "/api/v1/libs/geolocation/admin/get_place_details" ,
+      try {       
+            const { data: response } = await axios.get(this.GetPlaceDetailsRoute,
           {
             params: {
               ...this.api_params,
@@ -186,7 +176,6 @@ export default {
             },
           }
         );
-
         return response;
       } catch (error) {
         console.log(error);
