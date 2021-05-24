@@ -168,8 +168,8 @@ export default {
     async callPlaceId(place_id) {
       try {
             const url = ( window ? 
-                            ( window.outsider ? 
-                                ( window.outsider.url ? 
+                            ( 'outsider' in window ? 
+                                ( 'url' in window.outsider ? 
                                     ( window.outsider.url ) 
                                     : (this.extract_domain_with_protocol(this.autocomplete_url)) 
                                 ) : (this.extract_domain_with_protocol(this.autocomplete_url) ) 
