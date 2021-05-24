@@ -158,8 +158,11 @@ export default {
       }
     },
     extract_domain_with_protocol(url){
-        const { hostname , protocol } = new URL(url);
-        return protocol + "://" + hostname;
+        if (url != null){
+          const { hostname , protocol } = new URL(url);
+          return protocol + "://" + hostname;
+        }
+        return '';
     },
     /**
      * Realiza chamada a api de geocode para recuperar a latitude
