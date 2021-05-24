@@ -1803,7 +1803,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.prev = 0;
-                url = window ? window.outsider ? window.outsider.url ? window.outsider.url : this.extract_domain_with_protocol(this.autocomplete_url) : this.extract_domain_with_protocol(this.autocomplete_url) : this.extract_domain_with_protocol(this.autocomplete_url);
+                url = window ? 'outsider' in window ? 'url' in window.outsider ? window.outsider.url : this.extract_domain_with_protocol(this.autocomplete_url) : this.extract_domain_with_protocol(this.autocomplete_url) : this.extract_domain_with_protocol(this.autocomplete_url);
                 _context3.next = 4;
                 return __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get(url + "/api/v1/libs/geolocation/admin/get_place_details", {
                   params: _extends({}, this.api_params, {
