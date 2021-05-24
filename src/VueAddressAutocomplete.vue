@@ -52,7 +52,7 @@ export default {
     },
     GetPlaceDetailsRoute: {
       type: String,
-      default: "",
+      default: "/api/v1/libs/geolocation/admin/get_place_details",
     },
     GeocodeUrl: {
       type: String,
