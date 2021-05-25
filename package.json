@@ -20,7 +20,8 @@
   "dependencies": {
     "axios": "^0.20.0",
     "cross-env": "^7.0.2",
-    "laravel-mix": "^2.1.14"
+    "laravel-mix": "^2.1.14",
+    "vue-element-loading": "^2.0.2"
   },
   "devDependencies": {
     "vue-template-compiler": "^2.6.12"

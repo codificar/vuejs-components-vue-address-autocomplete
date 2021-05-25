@@ -1,13 +1,27 @@
 <template>
   <div style="position: relative">
-    <input
-      type="text"
-      class="form-control"
-      :placeholder="PlaceHolderText"
-      v-model="search_string"
-      @input="debounceSearch"
-      @blur="handleBlur"
-    />
+    <div style="
+      display: flex;
+      align-items: center;
+      justify-content: center;"
+    >
+      <input
+        type="text"
+        class="form-control"
+        :placeholder="PlaceHolderText"
+        v-model="search_string"
+        @input="debounceSearch"
+        @blur="handleBlur"
+      />
+
+      <VueElementLoading
+        :active="isLoading"
+        spinner="spinner"
+        color="#6666FF"
+      />
+      
+    </div>
+   
 
     <div v-if="show && !blur" class="container_results">
       <div v-for="(item, index) in places_result" :key="index">
@@ -33,8 +47,12 @@
 
 <script>
 import axios from "axios";
+import VueElementLoading from "vue-element-loading";
 
 export default {
+  components: {
+    VueElementLoading
+  },
   name: "VueAddressAutocomplete", // vue component name
   props: {
     AutocompleteParams: {
@@ -90,6 +108,7 @@ export default {
   },
   data() {
     return {
+      isLoading: false,
       search_string: this.Address != null ? this.Address : "",
       places_result: [],
       api_params: {},
@@ -101,18 +120,23 @@ export default {
       selectedAddress: null,
       address_number: null,
       hasNumber: true,
+      hasZipCode: false,
+      searchedZipCode: ""
     };
   },
 
   methods: {
-    setNumber() {
-      let newAddressWithNumber = { ...this.selectedAddress };
-
-      newAddressWithNumber.address = `${newAddressWithNumber.address} ${this.address_number}`;
-      newAddressWithNumber.main_text = `${newAddressWithNumber.main_text} ${this.address_number}`;
-      newAddressWithNumber.secondary_text = `${newAddressWithNumber.secondary_text} ${this.address_number}`;
-
-      this.$emit("addressSelected", newAddressWithNumber);
+    setNumber() {      
+      if (this.hasZipCode) {
+        this.findZipCode(this.selectedAddress)
+        return
+      }else {
+        let newAddressWithNumber = { ...this.selectedAddress };
+        newAddressWithNumber.address = `${newAddressWithNumber.address} ${this.address_number}`;
+        newAddressWithNumber.main_text = `${newAddressWithNumber.main_text} ${this.address_number}`;
+        newAddressWithNumber.secondary_text = `${newAddressWithNumber.secondary_text} ${this.address_number}`;
+        this.$emit("addressSelected", newAddressWithNumber);
+      }
     },
 
     removeInputNumber() {
@@ -125,20 +149,18 @@ export default {
       this.search_string = address;
       this.blur = true;
     },
+
     async setAdressAndSelectFirst(address) {
+      this.isLoading = true
+
       this.setPropsAdress(address);
+
       const placesResponse = await axios.get(this.autocomplete_url, {
         params: { ...this.api_params, place: this.search_string },
       });
+      await this.getGeocode(placesResponse.data.data[0])
 
-      const geocodeResponse = await this.callGeocodeApi(
-        placesResponse.data.data[0].address
-      );
-      if (geocodeResponse.success) {
-        geocodeResponse.data.latitude = geocodeResponse.data.latitude;
-        geocodeResponse.data.longitude = geocodeResponse.data.longitude;
-        this.$emit("addressSelected", geocodeResponse.data);
-      } else this.$emit("addressSelected", geocodeResponse.data);
+      this.isLoading = false
     },
 
     /**
@@ -146,12 +168,21 @@ export default {
      */
     async callAutocompleteApi() {
       this.blur = false;
+      this.hasZipCode = false
+      this.searchedZipCode = null
+      this.address_number = null
+      this.isLoading = true
       try {
         if (this.search_string.length > this.MinLength) {
+          //Format If Is ZipCode
+          if(this.checkZipCode(this.search_string)) {
+            this.hasZipCode = true;
+            this.searchedZipCode = this.formatZipCode(this.search_string)
+            this.search_string = this.search_string.replace(this.search_string.replace(/\D/g, ""), this.searchedZipCode)
+          }
           const { data: response } = await axios.get(this.autocomplete_url, {
             params: { ...this.api_params, place: this.search_string },
           });
-
           if (response.success) {
             this.places_result = response.data;
             this.clicker = response.clicker;
@@ -160,6 +191,7 @@ export default {
       } catch (error) {
         console.log(error);
       }
+      this.isLoading = false
     },
     /**
      * Realiza chamada a api de geocode para recuperar a latitude
@@ -191,11 +223,63 @@ export default {
         const { data: response } = await axios.get(this.geocode_url, {
           params: { ...this.api_params, address, clicker: this.clicker },
         });
-
+      
         return response;
       } catch (error) {
         console.log(error);
       }
+    },
+
+    async getGeocode(data) {
+      this.isLoading = true
+      this.selectedAddress = data;
+
+      if (this.selectedAddress.place_id != null) {
+        const response = await this.callPlaceId(this.selectedAddress.place_id);
+        if (response.success) {
+          this.selectedAddress.latitude = response.data.latitude;
+          this.selectedAddress.longitude = response.data.longitude;
+        }
+      }
+
+      if (this.selectedAddress.latitude === null || this.selectedAddress.longitude === null) {
+        const response = await this.callGeocodeApi(this.selectedAddress.address);
+        if (response.success) {
+          this.selectedAddress.latitude = response.data.latitude;
+          this.selectedAddress.longitude = response.data.longitude;
+        }
+      }
+      this.isLoading = false
+      this.$emit("addressSelected", this.selectedAddress);
+    },
+
+    async findZipCode(value) {
+       this.isLoading = true
+        const response = await axios.post(
+          "/api/v1/application/zip_code/geocode",
+          {
+            zipcode: this.searchedZipCode
+          }
+        );
+        if (response.status === 200 && response.data.success) {
+          const data = response.data;
+          if(this.address_number > 0){
+            const fullAddress = `${data.street} ${this.address_number}, ${data.district} - ${data.state}`;
+            this.setAdressAndSelectFirst(fullAddress)
+          }else {
+            this.validateNumber(value, true)
+          }
+        } else {
+          if(this.$toasted){
+            this.$toasted.show(this.trans("common_address.zip_code_not_found"), {
+              theme: "bubble",
+              type: "warning",
+              position: "bottom-center",
+              duration: 5000,
+            });
+          }
+        }
+        this.isLoading = false
     },
 
     /**
@@ -204,41 +288,18 @@ export default {
     async handleSelectAddress(data) {
       this.search_string = data.address;
       this.places_result = [];
-
       this.hasNumber = true;
-      if (!this.checkNumber(data.address) && this.RequiredNumber) {
-        if(this.$toasted) this.$toasted.show(this.NeedAddressNumberText, {
-          theme: "bubble",
-          type: "info",
-          position: "bottom-center",
-          duration: 5000,
-        });
-        this.hasNumber = false;
-      }
-      this.selectedAddress = data;
-      if (data.place_id != null) {
-        const response = await this.callPlaceId(data.place_id);
-        if (response.success) {
-          data.latitude = response.data.latitude;
-          data.longitude = response.data.longitude;
-          this.selectedAddress = data;
-          this.$emit("addressSelected", data);
-        } else this.$emit("addressSelected", data);
-        return;
+      this.hasZipCode = false;
+
+      await this.getGeocode(data)
+
+      if (this.checkZipCode(data.address)) {
+        this.hasZipCode = true
+        this.findZipCode(data)
+        return 
       }
 
-      if (data.latitude === null || data.longitude === null) {
-        const response = await this.callGeocodeApi(data.address);
-        if (response.success) {
-          data.latitude = response.data.latitude;
-          data.longitude = response.data.longitude;
-          this.selectedAddress = data;
-          this.$emit("addressSelected", data);
-        } else this.$emit("addressSelected", data);
-        return;
-      }
-
-      this.$emit("addressSelected", data);
+      this.validateNumber(data, !this.hasZipCode)
     },
 
     /**
@@ -266,6 +327,32 @@ export default {
       }, this.Delay);
     },
 
+
+    /**
+     * Checa se o endereço escolhido possui número
+     */
+    validateNumber(data, showAlert = false) {
+      if (!this.checkNumber(data.address) && this.RequiredNumber && showAlert) {
+        if(this.$toasted) this.$toasted.show(this.NeedAddressNumberText, {
+          theme: "bubble",
+          type: "info",
+          position: "bottom-center",
+          duration: 5000,
+        });
+        this.hasNumber = false;
+      }
+    },
+
+     /**
+     * Checa se o endereço escolhido possui número
+     */
+    validateRequiredNumber() {
+      if(!this.hasNumber && (this.address_number == null || this.address_number <= 0)  && this.hasZipCode && !this.isLoading && this.search_string.length > 0) return false
+
+      return true
+    },
+
+
     /**
      * Checa se o endereço escolhido possui número
      */
@@ -285,6 +372,26 @@ export default {
         // return typeof teste === "number" && !isNaN(teste) && index > 0;
       }));
     },
+
+     /**
+     * Checa se o endereço escolhido é um CEP
+     */
+    checkZipCode(address) {
+     var validacep = /^[0-9]{8}$/;
+
+     const zipCode = address.replace(/\D/g, "")
+
+     return validacep.test(zipCode)
+    },
+
+    /**
+     * Formata o Cep com 5-3
+     */
+    formatZipCode(address) {
+      const zipCode = address.replace(/\D/g, "")
+
+      return zipCode.replace(/(\d{5})(\d{3})$/,"$1-$2")
+    }
   },
 
   watch: {
@@ -337,4 +444,5 @@ export default {
 .row_result:hover {
   background: #eee;
 }
+
 </style>
