@@ -37,6 +37,7 @@
       <input
         v-model="address_number"
         @blur="setNumber"
+
         type="number"
         class="form-control"
       />
@@ -124,7 +125,7 @@ export default {
   },
 
   methods: {
-    setNumber() {
+    async setNumber() {
       if(this.address_number <= 0){
         if (this.$toasted)
         this.$toasted.show(this.NeedAddressNumberText, {
@@ -136,8 +137,9 @@ export default {
         return
       }
       if (this.hasZipCode) {
-        const fullAddress = `${this.address_number} ${this.selectedAddress.address}`;
-        this.setAdressAndSelectFirst(fullAddress);
+        this.search_string = `${this.selectedAddress.main_text} ${this.address_number}, ${this.selectedAddress.secondary_text}`
+        await this.callAutocompleteApi()
+        this.blur = false
         return;
       } else {
         let newAddressWithNumber = { ...this.selectedAddress };
@@ -295,6 +297,7 @@ export default {
       this.search_string = data.address;
       this.places_result = [];
       this.hasNumber = true;
+      this.blur = true
 
       await this.getGeocode(data);
       this.validateNumber(data);
