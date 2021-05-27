@@ -141,7 +141,8 @@ export default {
       document.getElementById("vue-js-auto-complete-id").focus();
     },
     setPropsAdress(value){
-     this.inputSearchAddress = value
+      this.selectedAddressOption = null
+      this.inputSearchAddress = value
     },
     handleSearchInput: debounce(async (loading, search, vm) => {
       await vm.searchPlace(search);
@@ -222,10 +223,14 @@ export default {
 
     async setAdressAndSelectFirst(address) {
       this.setPropsAdress(address);
+      
       const placesResponse = await axios.get(this.autocomplete_url, {
         params: { ...this.api_params, place: address },
       });
-      await this.getGeocode(placesResponse.data.data[0]);
+
+      this.selectedAddressOption = placesResponse.data.data[0]
+
+      await this.getGeocode(this.selectedAddressOption);
     },
     
     async callPlaceId(place_id) {
@@ -260,6 +265,7 @@ export default {
     },
 
     async getGeocode(data) {
+
       if (data.place_id != null) {
         const response = await this.callPlaceId(data.place_id);
         if (response.success) {
@@ -280,7 +286,7 @@ export default {
           data.longitude = response.data.longitude;
         }
       }
-      this.$emit("addressSelected", this.selectedAddressOption);
+      this.$emit("addressSelected", data);
     },
 
     async findZipCode(value) {
