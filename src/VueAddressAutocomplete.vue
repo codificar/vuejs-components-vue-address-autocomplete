@@ -228,6 +228,7 @@ export default {
         params: { ...this.api_params, place: address },
       });
 
+      this.inputSearchAddress = null
       this.selectedAddressOption = placesResponse.data.data[0]
 
       await this.getGeocode(this.selectedAddressOption);
