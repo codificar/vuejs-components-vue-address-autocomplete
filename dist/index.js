@@ -1872,26 +1872,24 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
               case 13:
                 console.log("Endereço selecionado: ");
                 console.log(this.selectedAddressOption);
+
                 newAddressWithNumber = _extends({}, this.selectedAddressOption);
 
                 console.log("Endereço copiado: ");
                 console.log(newAddressWithNumber);
 
                 newAddressWithNumber.address = newAddressWithNumber.address + " " + this.address_number;
-                newAddressWithNumber.main_text = newAddressWithNumber.main_text + " " + this.address_number;
-                newAddressWithNumber.secondary_text = newAddressWithNumber.secondary_text + " " + this.address_number;
+                newAddressWithNumber.main_text = newAddressWithNumber.address + " " + newAddressWithNumber.secondary_text;
+                // newAddressWithNumber.secondary_text = `${newAddressWithNumber.secondary_text} ${this.address_number}`;
                 console.log("Endereço modificado: ");
                 console.log(newAddressWithNumber);
-                // this.$emit("addressSelected", newAddressWithNumber);
 
-                _context4.next = 25;
-                return this.searchPlace(newAddressWithNumber);
+                this.$emit("addressSelected", newAddressWithNumber);
 
-              case 25:
+                //await this.searchPlace(newAddressWithNumber) 
+                //this.openOptions()
 
-                this.openOptions();
-
-              case 26:
+              case 23:
               case "end":
                 return _context4.stop();
             }
