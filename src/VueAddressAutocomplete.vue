@@ -187,7 +187,7 @@ export default {
     async setNumber() {
       if(this.address_number <= 0){
         if (this.$toasted)
-        this.$toasted.show(this.NeedAddressNumberText, {
+        this.$toasted.show("this.NeedAddressNumberText", {
           theme: "bubble",
           type: "info",
           position: "bottom-center",
