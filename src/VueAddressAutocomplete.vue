@@ -208,23 +208,16 @@ export default {
         return;
 
       } else {
-        console.log("Endereço selecionado: ");
-        console.log(this.selectedAddressOption);
-
         let newAddressWithNumber = { ...this.selectedAddressOption };
-        console.log("Endereço copiado: ");
-        console.log(newAddressWithNumber);
 
         newAddressWithNumber.main_text = `${newAddressWithNumber.main_text} ${this.address_number}`;
         newAddressWithNumber.address = `${newAddressWithNumber.main_text} ${newAddressWithNumber.secondary_text}`;
-        // newAddressWithNumber.secondary_text = `${newAddressWithNumber.secondary_text} ${this.address_number}`;
-        console.log("Endereço modificado: ");
-        console.log(newAddressWithNumber);
 
         this.$emit("addressSelected", newAddressWithNumber);
 
-        //await this.searchPlace(newAddressWithNumber) 
-        //this.openOptions()
+        // faz uma pesquisa com o novo endereço:
+        await this.searchPlace(newAddressWithNumber.main_text);
+        this.openOptions();
       }
     },
 
