@@ -1876,11 +1876,11 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                 newAddressWithNumber.main_text = newAddressWithNumber.main_text + " " + this.address_number;
                 newAddressWithNumber.address = newAddressWithNumber.main_text + " " + newAddressWithNumber.secondary_text;
 
-                this.$emit("addressSelected", newAddressWithNumber);
-
+                // this.$emit("addressSelected", newAddressWithNumber);
+                this.$emit('search', newAddressWithNumber.address, false);
                 // faz uma pesquisa com o novo endereço:
                 _context4.next = 19;
-                return this.searchPlace(newAddressWithNumber.main_text);
+                return this.searchPlace(newAddressWithNumber.address);
 
               case 19:
                 this.openOptions();
