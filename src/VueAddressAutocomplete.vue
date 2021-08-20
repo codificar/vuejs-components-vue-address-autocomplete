@@ -213,9 +213,8 @@ export default {
         newAddressWithNumber.main_text = `${newAddressWithNumber.main_text} ${this.address_number}`;
         newAddressWithNumber.address = `${newAddressWithNumber.main_text} ${newAddressWithNumber.secondary_text}`;
 
-        // this.$emit("addressSelected", newAddressWithNumber);
-        this.$emit('search', newAddressWithNumber.address, false);
         // faz uma pesquisa com o novo endereço:
+        this.inputSearchAddress = newAddressWithNumber.address;
         await this.searchPlace(newAddressWithNumber.address);
         this.openOptions();
       }
