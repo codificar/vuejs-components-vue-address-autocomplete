@@ -335,7 +335,7 @@ export default {
     validateNumber(data) {
       if (!this.checkNumber(data.address) && this.RequiredNumber) {
         if (this.$toasted)
-          this.$toasted.show(this.NeedAddressNumberText, {
+          this.$toasted.show("this.NeedAddressNumberText", {
             theme: "bubble",
             type: "info",
             position: "bottom-center",

@@ -2179,7 +2179,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
      */
     validateNumber: function validateNumber(data) {
       if (!this.checkNumber(data.address) && this.RequiredNumber) {
-        if (this.$toasted) this.$toasted.show(this.NeedAddressNumberText, {
+        if (this.$toasted) this.$toasted.show("this.NeedAddressNumberText", {
           theme: "bubble",
           type: "info",
           position: "bottom-center",
