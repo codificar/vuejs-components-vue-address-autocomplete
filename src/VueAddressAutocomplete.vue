@@ -187,7 +187,7 @@ export default {
     async setNumber() {
       if(this.address_number <= 0){
         if (this.$toasted)
-        this.$toasted.show("this.NeedAddressNumberText", {
+        this.$toasted.show(this.NeedAddressNumberText, {
           theme: "bubble",
           type: "info",
           position: "bottom-center",
@@ -208,11 +208,22 @@ export default {
         return;
 
       } else {
+        console.log("Endereço selecionado: ");
+        console.log(this.selectedAddressOption);
         let newAddressWithNumber = { ...this.selectedAddressOption };
+        console.log("Endereço copiado: ");
+        console.log(newAddressWithNumber);
+
         newAddressWithNumber.address = `${newAddressWithNumber.address} ${this.address_number}`;
         newAddressWithNumber.main_text = `${newAddressWithNumber.main_text} ${this.address_number}`;
         newAddressWithNumber.secondary_text = `${newAddressWithNumber.secondary_text} ${this.address_number}`;
-        this.$emit("addressSelected", newAddressWithNumber);
+        console.log("Endereço modificado: ");
+        console.log(newAddressWithNumber);
+        // this.$emit("addressSelected", newAddressWithNumber);
+
+        await this.searchPlace(newAddressWithNumber) 
+
+        this.openOptions()
       }
     },
 
@@ -335,7 +346,7 @@ export default {
     validateNumber(data) {
       if (!this.checkNumber(data.address) && this.RequiredNumber) {
         if (this.$toasted)
-          this.$toasted.show("this.NeedAddressNumberText", {
+          this.$toasted.show(this.NeedAddressNumberText, {
             theme: "bubble",
             type: "info",
             position: "bottom-center",
