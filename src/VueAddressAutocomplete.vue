@@ -213,6 +213,11 @@ export default {
         newAddressWithNumber.main_text = `${newAddressWithNumber.main_text} ${this.address_number}`;
         newAddressWithNumber.address = `${newAddressWithNumber.main_text} ${newAddressWithNumber.secondary_text}`;
 
+        // testar mudar o endereço atual:
+        this.selectedAddressOption.main_text = newAddressWithNumber.main_text;
+        this.selectedAddressOption.address = newAddressWithNumber.address;
+
+
         // faz uma pesquisa com o novo endereço:
         this.inputSearchAddress = newAddressWithNumber.address;
         await this.searchPlace(newAddressWithNumber.address);
