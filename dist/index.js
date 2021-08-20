@@ -1841,7 +1841,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                   break;
                 }
 
-                if (this.$toasted) this.$toasted.show("this.NeedAddressNumberText", {
+                if (this.$toasted) this.$toasted.show(this.NeedAddressNumberText, {
                   theme: "bubble",
                   type: "info",
                   position: "bottom-center",
@@ -1870,14 +1870,28 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                 return _context4.abrupt("return");
 
               case 13:
+                console.log("Endereço selecionado: ");
+                console.log(this.selectedAddressOption);
                 newAddressWithNumber = _extends({}, this.selectedAddressOption);
+
+                console.log("Endereço copiado: ");
+                console.log(newAddressWithNumber);
 
                 newAddressWithNumber.address = newAddressWithNumber.address + " " + this.address_number;
                 newAddressWithNumber.main_text = newAddressWithNumber.main_text + " " + this.address_number;
                 newAddressWithNumber.secondary_text = newAddressWithNumber.secondary_text + " " + this.address_number;
-                this.$emit("addressSelected", newAddressWithNumber);
+                console.log("Endereço modificado: ");
+                console.log(newAddressWithNumber);
+                // this.$emit("addressSelected", newAddressWithNumber);
 
-              case 18:
+                _context4.next = 25;
+                return this.searchPlace(newAddressWithNumber);
+
+              case 25:
+
+                this.openOptions();
+
+              case 26:
               case "end":
                 return _context4.stop();
             }
@@ -2179,7 +2193,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
      */
     validateNumber: function validateNumber(data) {
       if (!this.checkNumber(data.address) && this.RequiredNumber) {
-        if (this.$toasted) this.$toasted.show("this.NeedAddressNumberText", {
+        if (this.$toasted) this.$toasted.show(this.NeedAddressNumberText, {
           theme: "bubble",
           type: "info",
           position: "bottom-center",
