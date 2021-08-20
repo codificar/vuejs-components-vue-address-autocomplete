@@ -1878,8 +1878,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                 console.log("Endereço copiado: ");
                 console.log(newAddressWithNumber);
 
-                newAddressWithNumber.address = newAddressWithNumber.address + " " + this.address_number;
-                newAddressWithNumber.main_text = newAddressWithNumber.address + " " + newAddressWithNumber.secondary_text;
+                newAddressWithNumber.main_text = newAddressWithNumber.main_text + " " + this.address_number;
+                newAddressWithNumber.address = newAddressWithNumber.main_text + " " + newAddressWithNumber.secondary_text;
                 // newAddressWithNumber.secondary_text = `${newAddressWithNumber.secondary_text} ${this.address_number}`;
                 console.log("Endereço modificado: ");
                 console.log(newAddressWithNumber);
