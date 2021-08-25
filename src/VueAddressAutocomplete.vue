@@ -209,10 +209,19 @@ export default {
 
       } else {
         let newAddressWithNumber = { ...this.selectedAddressOption };
-        newAddressWithNumber.address = `${newAddressWithNumber.address} ${this.address_number}`;
+
         newAddressWithNumber.main_text = `${newAddressWithNumber.main_text} ${this.address_number}`;
-        newAddressWithNumber.secondary_text = `${newAddressWithNumber.secondary_text} ${this.address_number}`;
-        this.$emit("addressSelected", newAddressWithNumber);
+        newAddressWithNumber.address = `${newAddressWithNumber.main_text} ${newAddressWithNumber.secondary_text}`;
+
+        // testar mudar o endereço atual:
+        this.selectedAddressOption.main_text = newAddressWithNumber.main_text;
+        this.selectedAddressOption.address = newAddressWithNumber.address;
+
+
+        // faz uma pesquisa com o novo endereço:
+        this.inputSearchAddress = newAddressWithNumber.address;
+        await this.searchPlace(newAddressWithNumber.address);
+        this.openOptions();
       }
     },
 
