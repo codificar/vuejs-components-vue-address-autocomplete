@@ -115,6 +115,14 @@ export default {
       type: String,
       default: "Numero",
     },
+    PurveyorPlaces: {
+      type: String,
+      default: "google_maps",
+    },
+    RefreshSessionDeflateSearch: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -132,6 +140,7 @@ export default {
       inputSearchAddress: null,
       selectedAddressOption: null,
       addressOptions: [],
+      uuidv4: this.generateUuidv4()
     };
   },
 
@@ -149,6 +158,7 @@ export default {
       loading(false);
     }, 200),
     async onSearchAddress(search, loading) {
+      console.log('bbb');
       if (search.length > this.MinLength) {
         loading(true);
         await this.handleSearchInput(loading, search, this);
@@ -171,8 +181,23 @@ export default {
         );
       }
 
+      let placesParams = {
+        ...this.api_params,
+        place: this.inputSearchAddress
+      }
+
+      if(this.PurveyorPlaces == 'google_maps')
+      {
+        let sessionToken = this.uuidv4;
+
+        Object.assign(
+          placesParams,
+          { sessionToken }
+        );
+      }
+
       const { data: response } = await axios.get(this.autocomplete_url, {
-        params: { ...this.api_params, place: this.inputSearchAddress },
+        params: placesParams,
       });
 
       if (response.success) {
@@ -230,29 +255,63 @@ export default {
       this.hasNumber = true;
     },
 
-    async setAdressAndSelectFirst(address) {
+    async setAdressAndSelectFirst(address)
+    {
       this.setPropsAdress(address);
-      
+
+      let placesParams = { ...this.api_params, place: address };
+      let sessionToken = null;
+
+      if(this.PurveyorPlaces == 'google_maps')
+      {
+        sessionToken = this.uuidv4;
+
+        Object.assign(
+          placesParams,
+          { sessionToken }
+        );
+      }
+
       const placesResponse = await axios.get(this.autocomplete_url, {
-        params: { ...this.api_params, place: address },
+        params: placesParams,
       });
 
       this.inputSearchAddress = null
       this.selectedAddressOption = placesResponse.data.data[0]
 
+      if(sessionToken != null)
+        Object.assign(
+          this.selectedAddressOption,
+          { sessionToken }
+        ); 
+
       await this.getGeocode(this.selectedAddressOption);
     },
     
-    async callPlaceId(place_id) {
-      try {
+    async callPlaceId(place_id, sessionToken = null)
+    {
+      try
+      {
+        let detailsParams = {
+          ...this.api_params,
+          place_id,
+          clicker: this.clicker
+        };
+
+        if(sessionToken != null)
+          Object.assign(
+            detailsParams,
+            { sessionToken }
+          );
+
         const { data: response } = await axios.get(this.GetPlaceDetailsRoute, {
-          params: {
-            ...this.api_params,
-            place_id,
-            clicker: this.clicker,
-          },
+          params: detailsParams,
         });
+
+        this.uuidv4 = this.generateUuidv4();
+
         return response;
+
       } catch (error) {
         console.log("callPlaceId ", error);
       }
@@ -276,8 +335,10 @@ export default {
 
     async getGeocode(data) {
 
-      if (data.place_id != null) {
-        const response = await this.callPlaceId(data.place_id);
+      if(data.place_id != null)
+      {
+        let sessionToken = JSON.stringify(data).indexOf('sessionToken') >= 0 ? data.sessionToken : null;
+        const response = await this.callPlaceId(data.place_id, sessionToken);
         if (response.success) {
           data.latitude = response.data.latitude;
           data.longitude = response.data.longitude;
@@ -319,11 +380,18 @@ export default {
      * Seleciona uma sugestão de endereço
      */
     async handleSelectAddress(data) {
+      console.log('handle');
       this.places_result = [];
       this.hasNumber = true;
       this.inputSearchAddress = null
 
       this.selectedAddressOption = data
+
+      if(this.PurveyorPlaces == 'google_maps')
+        Object.assign(
+          this.selectedAddressOption,
+          { sessionToken: this.uuidv4 }
+        );
 
       await this.getGeocode(this.selectedAddressOption);
 
@@ -401,6 +469,14 @@ export default {
 
       return zipCode.replace(/(\d{5})(\d{3})$/, "$1-$2");
     },
+
+    generateUuidv4()
+    {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
   },
 
   watch: {
@@ -412,6 +488,7 @@ export default {
     },
   },
   mounted() {
+    console.log('ccc');
     this.autocomplete_url = this.AutocompleteUrl;
     this.geocode_url = this.GeocodeUrl;
 
