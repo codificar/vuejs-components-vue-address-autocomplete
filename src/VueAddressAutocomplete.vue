@@ -159,13 +159,21 @@ export default {
     }, 200),
     async onSearchAddress(search, loading)
     {
-      if(search.length === 0 && this.RefreshSessionDeflateSearch)
+      if(
+        search.length === 0 && 
+        this.RefreshSessionDeflateSearch &&
+        this.PurveyorPlaces == 'google_maps'
+      )
         this.uuidv4 = this.generateUuidv4();
       else
         if (search.length > this.MinLength) {
           loading(true);
           await this.handleSearchInput(loading, search, this);
         }
+
+      if(this.PurveyorPlaces == 'google_maps' && this.uuidv4 == null)
+        this.uuidv4 = this.generateUuidv4();
+
     },
     /**
      * Realiza chamada a api para sugestões de endereçõs
@@ -492,7 +500,6 @@ export default {
   },
   mounted()
   {
-    this.uuidv4 = this.generateUuidv4();
     this.autocomplete_url = this.AutocompleteUrl;
     this.geocode_url = this.GeocodeUrl;
 
