@@ -290,6 +290,8 @@ export default {
         ); 
 
       await this.getGeocode(this.selectedAddressOption);
+
+      this.uuidv4 = this.generateUuidv4();
     },
     
     async callPlaceId(place_id, sessionToken = null)
@@ -311,8 +313,6 @@ export default {
         const { data: response } = await axios.get(this.GetPlaceDetailsRoute, {
           params: detailsParams,
         });
-
-        this.uuidv4 = this.generateUuidv4();
 
         return response;
 
