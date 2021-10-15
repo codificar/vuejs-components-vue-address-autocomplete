@@ -154,6 +154,7 @@ export default {
       this.inputSearchAddress = value
     },
     handleSearchInput: debounce(async (loading, search, vm) => {
+      console.log('eee');
       await vm.searchPlace(search);
       loading(false);
     }, 200),
@@ -168,6 +169,7 @@ export default {
      * Realiza chamada a api para sugestões de endereçõs
     */
     async searchPlace(search) {
+      console.log('ddd');
       this.hasZipCode = false; // address is zipcode
       this.hasNumber = true; // address dont has Number
       this.address_number = null; // remove inputed number
@@ -485,6 +487,11 @@ export default {
         this.setApiParams();
       },
       immediate: true,
+    },
+    addressOptions: {
+      handler: function(val1,val2) {
+        console.log('val');
+      },
     },
   },
   mounted() {
