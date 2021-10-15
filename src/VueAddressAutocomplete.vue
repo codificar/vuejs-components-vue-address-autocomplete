@@ -154,22 +154,24 @@ export default {
       this.inputSearchAddress = value
     },
     handleSearchInput: debounce(async (loading, search, vm) => {
-      console.log('eee');
       await vm.searchPlace(search);
       loading(false);
     }, 200),
-    async onSearchAddress(search, loading) {
-      console.log('bbb');
-      if (search.length > this.MinLength) {
-        loading(true);
-        await this.handleSearchInput(loading, search, this);
-      }
+    async onSearchAddress(search, loading)
+    {
+      if(search.length === 0 && this.RefreshSessionDeflateSearch)
+        this.uuidv4 = this.generateUuidv4();
+      else
+        if (search.length > this.MinLength) {
+          loading(true);
+          await this.handleSearchInput(loading, search, this);
+        }
     },
     /**
      * Realiza chamada a api para sugestões de endereçõs
     */
-    async searchPlace(search) {
-      console.log('ddd');
+    async searchPlace(search)
+    {
       this.hasZipCode = false; // address is zipcode
       this.hasNumber = true; // address dont has Number
       this.address_number = null; // remove inputed number
@@ -381,13 +383,12 @@ export default {
     /**
      * Seleciona uma sugestão de endereço
      */
-    async handleSelectAddress(data) {
-      console.log('handle');
+    async handleSelectAddress(data)
+    {
       this.places_result = [];
       this.hasNumber = true;
-      this.inputSearchAddress = null
-
-      this.selectedAddressOption = data
+      this.inputSearchAddress = null;
+      this.selectedAddressOption = data;
 
       if(this.PurveyorPlaces == 'google_maps')
         Object.assign(
@@ -396,8 +397,9 @@ export default {
         );
 
       await this.getGeocode(this.selectedAddressOption);
+      await this.validateNumber(data);
 
-      this.validateNumber(data);
+      this.uuidv4 = this.generateUuidv4();
     },
 
     /**
@@ -487,15 +489,10 @@ export default {
         this.setApiParams();
       },
       immediate: true,
-    },
-    addressOptions: {
-      handler: function(val1,val2) {
-        console.log('val');
-      },
-    },
+    }
   },
-  mounted() {
-    console.log('ccc');
+  mounted()
+  {
     this.autocomplete_url = this.AutocompleteUrl;
     this.geocode_url = this.GeocodeUrl;
 
