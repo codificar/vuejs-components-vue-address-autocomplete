@@ -159,6 +159,9 @@ export default {
     }, 200),
     async onSearchAddress(search, loading)
     {
+      if(this.PurveyorPlaces == 'google_maps' && this.uuidv4 == null)
+        this.uuidv4 = await this.generateUuidv4();
+
       if(
         search.length === 0 && 
         this.RefreshSessionDeflateSearch &&
@@ -170,10 +173,6 @@ export default {
           loading(true);
           await this.handleSearchInput(loading, search, this);
         }
-
-      if(this.PurveyorPlaces == 'google_maps' && this.uuidv4 == null)
-        this.uuidv4 = this.generateUuidv4();
-
     },
     /**
      * Realiza chamada a api para sugestões de endereçõs
