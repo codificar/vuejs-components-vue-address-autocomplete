@@ -23,8 +23,8 @@
       <template slot="no-options">
         {{NotFoundAddress}}
       </template>
-      <template slot="option" @click="uuidv4 = generateUuidv4()" slot-scope="option" style="font-size: 15px;">
-        <div class="d-center">
+      <template slot="option" slot-scope="option" style="font-size: 15px;">
+        <div class="d-center" @click="uuidv4 = generateUuidv4()">
           <p style="margin-bottom: 0">{{ option.main_text }}</p>
           <p style="margin-bottom: 0">{{ option.secondary_text }}</p>
         </div>
@@ -140,7 +140,7 @@ export default {
       inputSearchAddress: null,
       selectedAddressOption: null,
       addressOptions: [],
-      uuidv4: this.generateUuidv4()
+      uuidv4: null
     };
   },
 
@@ -492,6 +492,7 @@ export default {
   },
   mounted()
   {
+    this.uuidv4 = this.generateUuidv4();
     this.autocomplete_url = this.AutocompleteUrl;
     this.geocode_url = this.GeocodeUrl;
 
