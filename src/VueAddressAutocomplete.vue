@@ -23,7 +23,7 @@
       <template slot="no-options">
         {{NotFoundAddress}}
       </template>
-      <template slot="option" slot-scope="option" style="font-size: 15px;">
+      <template slot="option" @click="uuidv4 = generateUuidv4()" slot-scope="option" style="font-size: 15px;">
         <div class="d-center">
           <p style="margin-bottom: 0">{{ option.main_text }}</p>
           <p style="margin-bottom: 0">{{ option.secondary_text }}</p>
@@ -397,9 +397,8 @@ export default {
         );
 
       await this.getGeocode(this.selectedAddressOption);
-      await this.validateNumber(data);
 
-      this.uuidv4 = this.generateUuidv4();
+      this.validateNumber(data);
     },
 
     /**
