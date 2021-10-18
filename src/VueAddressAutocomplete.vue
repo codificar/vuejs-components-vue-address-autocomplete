@@ -163,7 +163,7 @@ export default {
         this.uuidv4 = await this.generateUuidv4();
 
       if(
-        this.inputSearchAddress === 0 && 
+        this.inputSearchAddress.length === 0 && 
         this.RefreshSessionDeflateSearch &&
         this.PurveyorPlaces == 'google_maps'
       )
