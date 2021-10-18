@@ -159,6 +159,9 @@ export default {
     }, 200),
     async onSearchAddress(search, loading)
     {
+      console.log("selectedAddressOption: ",selectedAddressOption);
+      console.log("search: ",search);
+      console.log("loading: ",loading);
       if(this.PurveyorPlaces == 'google_maps' && this.uuidv4 == null)
         this.uuidv4 = await this.generateUuidv4('first');
 
