@@ -24,7 +24,7 @@
         {{NotFoundAddress}}
       </template>
       <template slot="option" slot-scope="option" style="font-size: 15px;">
-        <div class="d-center" @click="uuidv4 = generateUuidv4('click')">
+        <div class="d-center" @click="uuidv4 = generateUuidv4()">
           <p style="margin-bottom: 0">{{ option.main_text }}</p>
           <p style="margin-bottom: 0">{{ option.secondary_text }}</p>
         </div>
@@ -159,18 +159,15 @@ export default {
     }, 200),
     async onSearchAddress(search, loading)
     {
-      console.log("selectedAddressOption: ",this.selectedAddressOption);
-      console.log("search: ",search);
-      console.log("loading: ",loading);
       if(this.PurveyorPlaces == 'google_maps' && this.uuidv4 == null)
-        this.uuidv4 = await this.generateUuidv4('first');
+        this.uuidv4 = await this.generateUuidv4();
 
       if(
-        search.length === 0 && 
+        this.inputSearchAddress === 0 && 
         this.RefreshSessionDeflateSearch &&
         this.PurveyorPlaces == 'google_maps'
       )
-        this.uuidv4 = this.generateUuidv4('clear');
+        this.uuidv4 = this.generateUuidv4();
       else
         if (search.length > this.MinLength) {
           loading(true);
@@ -301,7 +298,7 @@ export default {
 
       await this.getGeocode(this.selectedAddressOption);
 
-      this.uuidv4 = this.generateUuidv4('dual');
+      this.uuidv4 = this.generateUuidv4();
     },
     
     async callPlaceId(place_id, sessionToken = null)
@@ -483,9 +480,8 @@ export default {
       return zipCode.replace(/(\d{5})(\d{3})$/, "$1-$2");
     },
 
-    generateUuidv4(logs)
+    generateUuidv4()
     {
-      console.log('method: ',logs);
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
