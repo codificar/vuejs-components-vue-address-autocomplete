@@ -24,7 +24,7 @@
         {{NotFoundAddress}}
       </template>
       <template slot="option" slot-scope="option" style="font-size: 15px;">
-        <div class="d-center" @click="uuidv4 = generateUuidv4()">
+        <div class="d-center">
           <p style="margin-bottom: 0">{{ option.main_text }}</p>
           <p style="margin-bottom: 0">{{ option.secondary_text }}</p>
         </div>
