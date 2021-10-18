@@ -297,8 +297,6 @@ export default {
         ); 
 
       await this.getGeocode(this.selectedAddressOption);
-
-      this.uuidv4 = this.generateUuidv4();
     },
     
     async callPlaceId(place_id, sessionToken = null)
@@ -353,6 +351,8 @@ export default {
         if (response.success) {
           data.latitude = response.data.latitude;
           data.longitude = response.data.longitude;
+
+          this.uuidv4 = this.generateUuidv4();
         }
       }
 
