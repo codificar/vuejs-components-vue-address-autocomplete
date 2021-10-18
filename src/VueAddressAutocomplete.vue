@@ -159,7 +159,7 @@ export default {
     }, 200),
     async onSearchAddress(search, loading)
     {
-      console.log("selectedAddressOption: ",selectedAddressOption);
+      console.log("selectedAddressOption: ",this.selectedAddressOption);
       console.log("search: ",search);
       console.log("loading: ",loading);
       if(this.PurveyorPlaces == 'google_maps' && this.uuidv4 == null)
