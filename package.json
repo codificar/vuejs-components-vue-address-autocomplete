@@ -20,12 +20,12 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.20.0",
-    "cross-env": "^7.0.2",
     "laravel-mix": "^6.0.6",
     "vue-element-loading": "^2.0.2",
     "vue-select": "^3.11.2"
   },
   "devDependencies": {
+    "vue-loader": "^15.9.7",
     "vue-template-compiler": "^2.6.12"
   }
 }
