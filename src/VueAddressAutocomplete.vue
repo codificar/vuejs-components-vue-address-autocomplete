@@ -156,7 +156,7 @@ export default {
     handleSearchInput: debounce(async (loading, search, vm) => {
       await vm.searchPlace(search);
       loading(false);
-    }, 200),
+    }, 1200),
     async onSearchAddress(search, loading)
     {
       if(this.PurveyorPlaces == 'google_maps' && this.uuidv4 == null)
@@ -215,7 +215,6 @@ export default {
         this.addressOptions = response.data;
         this.clicker = response.clicker;
       }else{
-        console.log("searchPlace ERROR");
       }
 
     },
@@ -248,16 +247,11 @@ export default {
 
         newAddressWithNumber.main_text = `${newAddressWithNumber.main_text} ${this.address_number}`;
         newAddressWithNumber.address = `${newAddressWithNumber.main_text} ${newAddressWithNumber.secondary_text}`;
-
         // testar mudar o endereço atual:
         this.selectedAddressOption.main_text = newAddressWithNumber.main_text;
         this.selectedAddressOption.address = newAddressWithNumber.address;
 
-
-        // faz uma pesquisa com o novo endereço:
-        this.inputSearchAddress = newAddressWithNumber.address;
-        await this.searchPlace(newAddressWithNumber.address);
-        this.openOptions();
+        if(this.checkNumber(this.selectedAddressOption.address)) this.removeInputNumber();
       }
     },
 
@@ -322,7 +316,6 @@ export default {
         return response;
 
       } catch (error) {
-        console.log("callPlaceId ", error);
       }
     },
 
@@ -338,7 +331,6 @@ export default {
 
         return response;
       } catch (error) {
-        console.log("callGeocodeApi ",error);
       }
     },
 
@@ -383,7 +375,6 @@ export default {
           return `${response.data.street} ${response.data.district} - ${response.data.state}`;
         }
       } catch (error) {
-        console.log("ZIP CODE ERROR ", error);
       }
     },
 
