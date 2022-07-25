@@ -156,7 +156,7 @@ export default {
     handleSearchInput: debounce(async (loading, search, vm) => {
       await vm.searchPlace(search);
       loading(false);
-    }, 1200),
+    }, 200),
     async onSearchAddress(search, loading)
     {
       if(this.PurveyorPlaces == 'google_maps' && this.uuidv4 == null)
