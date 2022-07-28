@@ -2,21 +2,21 @@
   <div style="position: relative">
 
     <v-select
-      v-model="selectedAddressOption"
-      label="address"
-      :filterable="false"
-      :options="addressOptions"
-      @search="onSearchAddress"
-      @input="handleSelectAddress"
-      inputId="vue-js-auto-complete-id"
+        v-model="selectedAddressOption"
+        label="address"
+        :filterable="false"
+        :options="addressOptions"
+        @search="onSearchAddress"
+        @input="handleSelectAddress"
+        inputId="vue-js-auto-complete-id"
     >
       <template #search="{ attributes, events }">
         <input
-          maxlength="255"
-          v-model="inputSearchAddress"
-          class="vs__search"
-          v-bind="attributes"
-          v-on="events"
+            maxlength="255"
+            v-model="inputSearchAddress"
+            class="vs__search"
+            v-bind="attributes"
+            v-on="events"
         >
       </template>
 
@@ -31,7 +31,7 @@
       </template>
       <template slot="selected-option" slot-scope="option">
         <div class="selected d-center" style="font-size: 15px;">
-         {{  option.address }}
+          {{  option.address }}
         </div>
       </template>
     </v-select>
@@ -39,11 +39,11 @@
     <div v-if="!hasNumber">
       <label> {{ NumberLabel }} :</label>
       <input
-        v-model="address_number"
-        @blur="setNumber"
+          v-model="address_number"
+          @blur="setNumber"
 
-        type="number"
-        class="form-control"
+          type="number"
+          class="form-control"
       />
     </div>
   </div>
@@ -104,12 +104,12 @@ export default {
     NeedAddressNumberText: {
       type: String,
       default:
-        "Você não informou o número do endereço, informando-o a busca fica mais precisa.",
+          "Você não informou o número do endereço, informando-o a busca fica mais precisa.",
     },
     NotFoundAddress: {
       type: String,
       default:
-        "Nenhum Endereço Encontrado.",
+          "Nenhum Endereço Encontrado.",
     },
     NumberLabel: {
       type: String,
@@ -140,7 +140,9 @@ export default {
       inputSearchAddress: null,
       selectedAddressOption: null,
       addressOptions: [],
-      uuidv4: null
+      uuidv4: null,
+
+      getLatLngUrl : "/api/v1/get_lat_long_from_address"
     };
   },
 
@@ -163,20 +165,20 @@ export default {
         this.uuidv4 = await this.generateUuidv4();
 
       if(
-        this.inputSearchAddress.length === 0 && 
-        this.RefreshSessionDeflateSearch &&
-        this.PurveyorPlaces == 'google_maps'
+          this.inputSearchAddress.length === 0 &&
+          this.RefreshSessionDeflateSearch &&
+          this.PurveyorPlaces == 'google_maps'
       )
         this.uuidv4 = this.generateUuidv4();
       else
-        if (search.length > this.MinLength) {
-          loading(true);
-          await this.handleSearchInput(loading, search, this);
-        }
+      if (search.length > this.MinLength) {
+        loading(true);
+        await this.handleSearchInput(loading, search, this);
+      }
     },
     /**
      * Realiza chamada a api para sugestões de endereçõs
-    */
+     */
     async searchPlace(search)
     {
       this.hasZipCode = false; // address is zipcode
@@ -188,7 +190,7 @@ export default {
       if (this.checkZipCode(this.inputSearchAddress)) {
         this.hasZipCode = true;
         this.inputSearchAddress = await this.findZipCode(
-          this.formatZipCode(this.inputSearchAddress)
+            this.formatZipCode(this.inputSearchAddress)
         );
       }
 
@@ -202,11 +204,10 @@ export default {
         let sessionToken = this.uuidv4;
 
         Object.assign(
-          placesParams,
-          { sessionToken }
+            placesParams,
+            { sessionToken }
         );
       }
-
       const { data: response } = await axios.get(this.autocomplete_url, {
         params: placesParams,
       });
@@ -215,20 +216,37 @@ export default {
         this.addressOptions = response.data;
         this.clicker = response.clicker;
       }else{
-        console.log("searchPlace ERROR");
       }
+    },
 
+    /**
+     * Update address lat and lng with number
+     */
+    async updateAddressLatLng(address)
+    {
+      const finisHttpIndex = this.autocomplete_url.indexOf('//')
+      const urlWithoutHttp = this.autocomplete_url.slice(finisHttpIndex + 2)
+      const baseServerUrl= this.autocomplete_url.substring(0,   urlWithoutHttp.indexOf('/') + finisHttpIndex + 2 )
+
+      const { data: response } = await axios.post(baseServerUrl + this.getLatLngUrl, {
+        address: address,
+      });
+
+      if (response.success && this.selectedAddressOption) {
+        this.selectedAddressOption.latitude = response.data.latitude;
+        this.selectedAddressOption.longitude = response.data.longitude;
+      }
     },
 
     async setNumber() {
       if(this.address_number <= 0){
         if (this.$toasted)
-        this.$toasted.show(this.NeedAddressNumberText, {
-          theme: "bubble",
-          type: "info",
-          position: "bottom-center",
-          duration: 5000,
-        });
+          this.$toasted.show(this.NeedAddressNumberText, {
+            theme: "bubble",
+            type: "info",
+            position: "bottom-center",
+            duration: 5000,
+          });
         return
       }
       if (this.hasZipCode) {
@@ -236,8 +254,8 @@ export default {
 
         this.selectedAddressOption = null
         this.removeInputNumber()
-      
-        await this.searchPlace(this.inputSearchAddress) 
+
+        await this.searchPlace(this.inputSearchAddress)
 
         this.openOptions()
 
@@ -248,16 +266,12 @@ export default {
 
         newAddressWithNumber.main_text = `${newAddressWithNumber.main_text} ${this.address_number}`;
         newAddressWithNumber.address = `${newAddressWithNumber.main_text} ${newAddressWithNumber.secondary_text}`;
-
         // testar mudar o endereço atual:
         this.selectedAddressOption.main_text = newAddressWithNumber.main_text;
         this.selectedAddressOption.address = newAddressWithNumber.address;
+        this.updateAddressLatLng(newAddressWithNumber.address)
 
-
-        // faz uma pesquisa com o novo endereço:
-        this.inputSearchAddress = newAddressWithNumber.address;
-        await this.searchPlace(newAddressWithNumber.address);
-        this.openOptions();
+        if(this.checkNumber(this.selectedAddressOption.address)) this.removeInputNumber();
       }
     },
 
@@ -278,8 +292,8 @@ export default {
         sessionToken = this.uuidv4;
 
         Object.assign(
-          placesParams,
-          { sessionToken }
+            placesParams,
+            { sessionToken }
         );
       }
 
@@ -292,13 +306,13 @@ export default {
 
       if(sessionToken != null)
         Object.assign(
-          this.selectedAddressOption,
-          { sessionToken }
-        ); 
+            this.selectedAddressOption,
+            { sessionToken }
+        );
 
       await this.getGeocode(this.selectedAddressOption);
     },
-    
+
     async callPlaceId(place_id, sessionToken = null)
     {
       try
@@ -311,8 +325,8 @@ export default {
 
         if(sessionToken != null)
           Object.assign(
-            detailsParams,
-            { sessionToken }
+              detailsParams,
+              { sessionToken }
           );
 
         const { data: response } = await axios.get(this.GetPlaceDetailsRoute, {
@@ -322,7 +336,6 @@ export default {
         return response;
 
       } catch (error) {
-        console.log("callPlaceId ", error);
       }
     },
 
@@ -338,7 +351,6 @@ export default {
 
         return response;
       } catch (error) {
-        console.log("callGeocodeApi ",error);
       }
     },
 
@@ -357,11 +369,11 @@ export default {
       }
 
       if (
-        data.latitude === null ||
-        data.longitude === null
+          data.latitude === null ||
+          data.longitude === null
       ) {
         const response = await this.callGeocodeApi(
-          data.address
+            data.address
         );
         if (response.success) {
           data.latitude = response.data.latitude;
@@ -374,16 +386,15 @@ export default {
     async findZipCode(value) {
       try {
         const response = await axios.post(
-          "/api/v1/application/zip_code/geocode",
-          {
-            zipcode: value,
-          }
+            "/api/v1/application/zip_code/geocode",
+            {
+              zipcode: value,
+            }
         );
         if (response.status === 200 && response.data.success) {
           return `${response.data.street} ${response.data.district} - ${response.data.state}`;
         }
       } catch (error) {
-        console.log("ZIP CODE ERROR ", error);
       }
     },
 
@@ -399,8 +410,8 @@ export default {
 
       if(this.PurveyorPlaces == 'google_maps')
         Object.assign(
-          this.selectedAddressOption,
-          { sessionToken: this.uuidv4 }
+            this.selectedAddressOption,
+            { sessionToken: this.uuidv4 }
         );
 
       await this.getGeocode(this.selectedAddressOption);
