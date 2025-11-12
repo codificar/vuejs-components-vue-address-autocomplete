@@ -21,7 +21,7 @@
       </template>
 
       <template slot="no-options">
-        {{NotFoundAddress}}
+        {{translatedNotFoundAddress}}
       </template>
       <template slot="option" slot-scope="option" style="font-size: 15px;">
         <div class="d-center">
@@ -37,7 +37,7 @@
     </v-select>
 
     <div v-if="!hasNumber">
-      <label> {{ NumberLabel }} :</label>
+      <label> {{ translatedNumberLabel }} :</label>
       <input
           v-model="address_number"
           @blur="setNumber"
@@ -54,6 +54,7 @@ import axios from "axios";
 import { debounce } from "lodash";
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
+import { getTranslation } from './translations/index';
 export default {
   components: {
     vSelect,
@@ -83,7 +84,7 @@ export default {
     },
     PlaceHolderText: {
       type: String,
-      default: "Escreva o endereço",
+      default: null,
     },
     MinLength: {
       type: Number,
@@ -103,17 +104,15 @@ export default {
     },
     NeedAddressNumberText: {
       type: String,
-      default:
-          "Você não informou o número do endereço, informando-o a busca fica mais precisa.",
+      default: null,
     },
     NotFoundAddress: {
       type: String,
-      default:
-          "Nenhum Endereço Encontrado.",
+      default: null,
     },
     NumberLabel: {
       type: String,
-      default: "Numero",
+      default: null,
     },
     PurveyorPlaces: {
       type: String,
@@ -122,6 +121,35 @@ export default {
     RefreshSessionDeflateSearch: {
       type: Boolean,
       default: false,
+    },
+    Locale: {
+      type: String,
+      default: 'pt-br',
+      validator: function (value) {
+        return ['pt-br', 'en-gb', 'en', 'es-py'].indexOf(value) !== -1;
+      }
+    },
+  },
+  computed: {
+    translatedPlaceHolderText() {
+      return this.PlaceHolderText !== null 
+        ? this.PlaceHolderText 
+        : getTranslation(this.Locale, 'placeholderText');
+    },
+    translatedNeedAddressNumberText() {
+      return this.NeedAddressNumberText !== null 
+        ? this.NeedAddressNumberText 
+        : getTranslation(this.Locale, 'needAddressNumberText');
+    },
+    translatedNotFoundAddress() {
+      return this.NotFoundAddress !== null 
+        ? this.NotFoundAddress 
+        : getTranslation(this.Locale, 'notFoundAddress');
+    },
+    translatedNumberLabel() {
+      return this.NumberLabel !== null 
+        ? this.NumberLabel 
+        : getTranslation(this.Locale, 'numberLabel');
     },
   },
   data() {
@@ -241,7 +269,7 @@ export default {
     async setNumber() {
       if(this.address_number <= 0){
         if (this.$toasted)
-          this.$toasted.show(this.NeedAddressNumberText, {
+          this.$toasted.show(this.translatedNeedAddressNumberText, {
             theme: "bubble",
             type: "info",
             position: "bottom-center",
@@ -433,7 +461,7 @@ export default {
     validateNumber(data) {
       if (!this.checkNumber(data.address) && this.RequiredNumber) {
         if (this.$toasted)
-          this.$toasted.show(this.NeedAddressNumberText, {
+          this.$toasted.show(this.translatedNeedAddressNumberText, {
             theme: "bubble",
             type: "info",
             position: "bottom-center",
