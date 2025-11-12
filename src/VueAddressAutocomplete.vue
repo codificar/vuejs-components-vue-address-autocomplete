@@ -55,7 +55,7 @@ import axios from "axios";
 import { debounce } from "lodash";
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
-import { getTranslation } from './translations';
+import { getTranslation } from './translations/index';
 export default {
   components: {
     vSelect,
@@ -132,25 +132,37 @@ export default {
     },
   },
   computed: {
+    addressAutocompleteLocale() {
+      const locale = window.settings?.locale || this.Locale || 'pt-br';
+      const localeMap = {
+        'pt-br': 'pt-br',
+        'pt': 'pt-br',
+        'en': 'en',
+        'en-gb': 'en-gb',
+        'es': 'es-py',
+        'es-py': 'es-py'
+      };
+      return localeMap[locale] || 'pt-br';
+    },
     translatedPlaceHolderText() {
       return this.PlaceHolderText !== null 
         ? this.PlaceHolderText 
-        : getTranslation(this.Locale, 'placeholderText');
+        : getTranslation(this.addressAutocompleteLocale, 'placeholderText');
     },
     translatedNeedAddressNumberText() {
       return this.NeedAddressNumberText !== null 
         ? this.NeedAddressNumberText 
-        : getTranslation(this.Locale, 'needAddressNumberText');
+        : getTranslation(this.addressAutocompleteLocale, 'needAddressNumberText');
     },
     translatedNotFoundAddress() {
       return this.NotFoundAddress !== null 
         ? this.NotFoundAddress 
-        : getTranslation(this.Locale, 'notFoundAddress');
+        : getTranslation(this.addressAutocompleteLocale, 'notFoundAddress');
     },
     translatedNumberLabel() {
       return this.NumberLabel !== null 
         ? this.NumberLabel 
-        : getTranslation(this.Locale, 'numberLabel');
+        : getTranslation(this.addressAutocompleteLocale, 'numberLabel');
     },
   },
   data() {
