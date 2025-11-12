@@ -1,7 +1,7 @@
-import ptBr from './pt-br/index';
-import enGb from './en-gb/index';
-import en from './en/index';
-import esPy from './es-py/index';
+import ptBr from './pt-br';
+import enGb from './en-gb';
+import en from './en';
+import esPy from './es-py';
 
 export const translations = {
   'pt-br': ptBr,

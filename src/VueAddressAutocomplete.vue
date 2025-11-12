@@ -15,6 +15,7 @@
             maxlength="255"
             v-model="inputSearchAddress"
             class="vs__search"
+            :placeholder="translatedPlaceHolderText"
             v-bind="attributes"
             v-on="events"
         >
@@ -54,7 +55,7 @@ import axios from "axios";
 import { debounce } from "lodash";
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
-import { getTranslation } from './translations/index';
+import { getTranslation } from './translations';
 export default {
   components: {
     vSelect,
